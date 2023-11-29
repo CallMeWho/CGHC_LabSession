@@ -37,6 +37,7 @@ public class PlayerController : MonoBehaviour
     private float _skin = 0.05f;
     private float _internalFaceDirection = 1f;
     private float _faceDirection;
+    private float _wallFallMultiplier;
 
     #endregion
     private void Start()
@@ -51,6 +52,7 @@ public class PlayerController : MonoBehaviour
         StartMovement();
         SetRayOrigins();
         GetFaceDirection();
+        RotateModel();
         if (FacingRight)
         {
             HorizontalCollision(1);
@@ -179,6 +181,10 @@ public class PlayerController : MonoBehaviour
                 _movePosition.y = hit.distance - _boundsHeight / 2f;
                 _conditions.IsCollidingAbove = true;
             }
+            else
+            {
+                _conditions.IsCollidingAbove = false;
+            }
         }
     }
     #endregion
@@ -217,6 +223,14 @@ public class PlayerController : MonoBehaviour
         }
 
         _force.y += _currentGravity * Time.deltaTime;
+        if (_wallFallMultiplier != 0)
+        {
+            _force.y *= _wallFallMultiplier;
+        }
+    }
+    public void SetWallClingMultiplier(float fallM)
+    {
+        _wallFallMultiplier = fallM;
     }
     #endregion
     #region Direction
@@ -237,6 +251,17 @@ public class PlayerController : MonoBehaviour
             FacingRight = false;
         }
         _internalFaceDirection = _faceDirection;
+    }
+    private void RotateModel()
+    {
+        if (FacingRight)
+        {
+            transform.localScale = new Vector3(1, 1, 1);
+        }
+        else
+        {
+            transform.localScale = new Vector3(-1, 1, 1);
+        }
     }
 
     #endregion
